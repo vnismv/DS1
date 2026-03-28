@@ -58,7 +58,7 @@ horizon-voyages/
 
 ```bash
 # 1. Cloner le dépôt
-git clone https://github.com/<username>/horizon-voyages.git
+git clone https://github.com/vnismv/horizon-voyages.git
 
 # 2. Accéder au dossier
 cd horizon-voyages
@@ -109,7 +109,7 @@ git config --global user.email "email@example.com"
 ### Initialisation & Clonage
 ```bash
 git init
-git clone https://github.com/<username>/horizon-voyages.git
+git clone https://github.com/vnismv/horizon-voyages.git
 ```
 
 ### Branches
@@ -139,7 +139,7 @@ git fetch --all                   # Récupérer toutes les branches distantes
 ### Merge & Rebase
 ```bash
 git merge develop                 # Fusionner develop dans la branche courante
-git rebase develop                # Rejouer les commits (bonus)
+git rebase develop                # Rejouer les commits 
 ```
 
 ### Gestion des conflits
