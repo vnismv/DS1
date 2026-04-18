@@ -1,0 +1,39 @@
+name: CI/CD Pipeline DS2
+
+on:
+  push:
+    branches: [ main, develop, feature-docker-v1 ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Récupération du code source
+      - name: Checkout du code
+        uses: actions/checkout@v3
+
+      # 2. Étape 1 - Validation HTML/CSS (Script simple comme demandé)
+      - name: Validation des fichiers web
+        run: |
+          echo "🔍 Vérification de la structure du projet..."
+          test -f html/index.html || (echo "❌ ERREUR: html/index.html manquant" && exit 1)
+          test -d css && [ "$(ls -A css)" ] || (echo "❌ ERREUR: dossier css vide" && exit 1)
+          echo "✅ Validation HTML/CSS réussie !"
+
+      # 3. Étape 2 - Construction de l'image Docker
+      - name: Build Docker Image
+        run: |
+          docker build -t ds2-web-app .
+          echo "✅ Image Docker construite avec succès !"
+
+      # 4. Étape 3 - Scan de sécurité (Bonus demandé)
+      - name: Security Scan (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'ds2-web-app'
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
