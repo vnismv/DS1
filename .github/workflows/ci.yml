@@ -1,0 +1,72 @@
+name: CI/CD — Horizon Voyages
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+
+jobs:
+  test:
+    name: Tests — Validation HTML/CSS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout du code source
+        uses: actions/checkout@v4
+
+      - name: Verifier les fichiers HTML
+        run: |
+          if [ ! -f "html/index.html" ]; then echo "ERREUR index.html manquant"; exit 1; fi
+          if [ ! -f "html/destinations.html" ]; then echo "ERREUR destinations.html manquant"; exit 1; fi
+          if [ ! -f "html/contact.html" ]; then echo "ERREUR contact.html manquant"; exit 1; fi
+          echo "OK tous les fichiers HTML presents"
+
+      - name: Verifier les fichiers CSS
+        run: |
+          if [ ! -f "css/style.css" ]; then echo "ERREUR style.css manquant"; exit 1; fi
+          echo "OK tous les fichiers CSS presents"
+
+      - name: Verifier le Dockerfile
+        run: |
+          if [ ! -f "Dockerfile" ]; then echo "ERREUR Dockerfile manquant"; exit 1; fi
+          if [ ! -f "docker-compose.yml" ]; then echo "ERREUR docker-compose.yml manquant"; exit 1; fi
+          echo "OK Dockerfile et docker-compose.yml presents"
+
+      - name: Valider syntaxe HTML
+        run: |
+          for file in html/*.html; do
+            if grep -q "<!DOCTYPE html>" "$file"; then
+              echo "OK $file valide"
+            else
+              echo "ERREUR $file invalide"; exit 1
+            fi
+          done
+
+  build:
+    name: Build — Image Docker
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout du code source
+        uses: actions/checkout@v4
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build image Docker
+        run: |
+          docker build -t horizon-voyages:latest .
+          echo "OK image construite"
+
+      - name: Test lancement conteneur
+        run: |
+          docker run -d --name test-container -p 8080:80 horizon-voyages:latest
+          sleep 3
+          docker ps | grep test-container
+          echo "OK conteneur tourne"
+          docker stop test-container
+          docker rm test-container
