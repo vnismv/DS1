@@ -15,3 +15,5 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 
 CMD ["nginx", "-g", "daemon off;"]
+
+# v1.0 — testé localement avec docker build et docker run
