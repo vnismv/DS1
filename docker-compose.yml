@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: horizon-voyages-web
+    ports:
+      - "8080:80"
+    networks:
+      - horizon-network
+    restart: unless-stopped
+
+  logs-viewer:
+    image: httpd:alpine
+    container_name: horizon-logs-viewer
+    ports:
+      - "8081:80"
+    networks:
+      - horizon-network
+    depends_on:
+      - web
+
+networks:
+  horizon-network:
+    driver: bridge
